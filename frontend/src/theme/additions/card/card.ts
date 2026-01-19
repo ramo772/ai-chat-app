@@ -6,7 +6,7 @@ const Card = {
     flexDirection: 'column',
     width: '100%',
     position: 'relative',
-    borderRadius: '8px',
+    borderRadius: '12px',
     minWidth: '0px',
     wordWrap: 'break-word',
     bg: mode('#ffffff', '#2A2A2A')(props),
@@ -14,8 +14,9 @@ const Card = {
       '0 2px 8px rgba(0, 0, 0, 0.06)',
       'unset',
     )(props),
-    border: mode('1px solid #E6E6E6', '1px solid #333333')(props),
+    border: mode('none', '1px solid #333333')(props),
     backgroundClip: 'border-box',
+    transition: 'all 0.2s ease',
   }),
 };
 

@@ -3,6 +3,7 @@
 
 import Link from '@/components/link/Link';
 import MessageBoxChat from '@/components/MessageBox';
+import VodafoneLogo from '@/components/VodafoneLogo';
 import { ChatBody, OpenAIModel } from '@/types/types';
 import {
   Accordion,
@@ -19,9 +20,11 @@ import {
   Input,
   Text,
   useColorModeValue,
+  SimpleGrid,
+  VStack,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { MdAutoAwesome, MdBolt, MdEdit, MdPerson } from 'react-icons/md';
+import { MdAutoAwesome, MdBolt, MdEdit, MdPerson, MdHelp, MdLightbulb, MdSupport, MdChat } from 'react-icons/md';
 import Bg from '../public/img/chat/bg-image.png';
 
 export default function Chat(props: { apiKeyApp: string }) {
@@ -255,16 +258,18 @@ export default function Chat(props: { apiKeyApp: string }) {
       direction="column"
       position="relative"
       bg={useColorModeValue('#FFFFFF', '#1A1A1A')}
+      minH="100vh"
     >
       <Flex
         direction="column"
         mx="auto"
         w={{ base: '100%', md: '100%', xl: '100%' }}
-        minH={{ base: '75vh', '2xl': '85vh' }}
-        maxW="1000px"
-        px={{ base: '20px', md: '40px' }}
+        minH={{ base: '85vh', '2xl': '90vh' }}
+        maxW="900px"
+        px={{ base: '20px', md: '32px' }}
+        py={{ base: '20px', md: '40px' }}
       >
-        {/* Welcome Message - Show when no messages */}
+        {/* Professional Corporate Hero Section */}
         {messages.length === 0 && (
           <Flex
             direction="column"
@@ -272,51 +277,68 @@ export default function Chat(props: { apiKeyApp: string }) {
             justify="center"
             flex="1"
             textAlign="center"
-            mb="40px"
+            py="80px"
           >
+            {/* Vodafone Logo */}
+            <Box mb="48px">
+              <Image
+                src="/img/vf-logo-large.png"
+                alt="Vodafone"
+                h={{ base: '60px', md: '80px' }}
+                objectFit="contain"
+              />
+            </Box>
+            
+            {/* Simple Corporate Headline */}
             <Text
               fontSize={{ base: '32px', md: '48px' }}
-              fontWeight="700"
-              color={useColorModeValue('#E60000', 'white')}
-              mb="16px"
+              fontWeight="600"
+              color={useColorModeValue('#333333', 'white')}
+              mb="20px"
+              letterSpacing="-0.5px"
+              lineHeight="1.2"
             >
-              Hello, how can I help?
+              How can we help you today?
             </Text>
+            
+            {/* Clean Description */}
             <Text
               fontSize={{ base: '16px', md: '18px' }}
-              color={useColorModeValue('#666666', '#CCCCCC')}
+              color={useColorModeValue('#666666', '#999999')}
               maxW="600px"
+              lineHeight="1.6"
+              fontWeight="400"
             >
-              Ask me anything. I'm here to assist you with your questions.
+              Get instant support from our AI assistant.
+              Simply type your question below.
             </Text>
           </Flex>
         )}
         
-        {/* Main Box - Conversation History */}
+        {/* Conversation History */}
         <Flex
           direction="column"
           w="100%"
           mx="auto"
           display={messages.length > 0 ? 'flex' : 'none'}
           mb={'auto'}
+          mt={{ base: '24px', md: '40px' }}
         >
           {messages.map((message, index) => (
-            <Flex key={index} direction="column" w="100%" mb="20px">
+            <Flex key={index} direction="column" w="100%" mb="24px">
               {message.role === 'user' ? (
-                <Flex w="100%" align={'center'} mb="10px" justifyContent="flex-end">
+                <Flex w="100%" align="flex-start" justifyContent="flex-end">
                   <Flex
                     p="16px 20px"
-                    border="none"
                     borderRadius="8px"
-                    maxW="70%"
-                    zIndex={'2'}
-                    bg={useColorModeValue('#FFE5E5', '#660000')}
+                    maxW="75%"
+                    bg={useColorModeValue('#E60000', '#CC0000')}
                   >
                     <Text
-                      color={useColorModeValue('#333333', 'white')}
-                      fontWeight="500"
-                      fontSize={{ base: 'sm', md: 'md' }}
-                      lineHeight={{ base: '22px', md: '24px' }}
+                      color="white"
+                      fontWeight="400"
+                      fontSize="15px"
+                      lineHeight="24px"
                     >
                       {message.content}
                     </Text>
@@ -325,7 +347,7 @@ export default function Chat(props: { apiKeyApp: string }) {
                     borderRadius="full"
                     justify="center"
                     align="center"
-                    bg={useColorModeValue('#E60000', '#CC0000')}
+                    bg={useColorModeValue('#666666', '#4A4A4A')}
                     ms="12px"
                     h="40px"
                     minH="40px"
@@ -340,7 +362,7 @@ export default function Chat(props: { apiKeyApp: string }) {
                   </Flex>
                 </Flex>
               ) : (
-                <Flex w="100%" justifyContent="flex-start">
+                <Flex w="100%" justifyContent="flex-start" align="flex-start">
                   <Flex
                     borderRadius="full"
                     justify="center"
@@ -358,7 +380,7 @@ export default function Chat(props: { apiKeyApp: string }) {
                       color="white"
                     />
                   </Flex>
-                  <Box maxW="70%">
+                  <Box maxW="75%">
                     <MessageBoxChat output={message.content} />
                   </Box>
                 </Flex>
@@ -366,68 +388,84 @@ export default function Chat(props: { apiKeyApp: string }) {
             </Flex>
           ))}
         </Flex>
-        {/* Chat Input */}
-        <Flex
-          ms={{ base: '0px', xl: '60px' }}
-          mt="20px"
-          justifySelf={'flex-end'}
+        {/* Chat Input Section */}
+        <Box
+          mt="auto"
+          pt="24px"
+          borderTop="1px solid"
+          borderColor={useColorModeValue('#E6E6E6', '#333333')}
+          bg={useColorModeValue('white', '#1A1A1A')}
         >
-          <Input
-            minH="54px"
-            h="100%"
-            border="2px solid"
-            borderColor={borderColor}
-            borderRadius="8px"
-            p="15px 20px"
-            me="10px"
-            fontSize="sm"
-            fontWeight="400"
-            _focus={{ borderColor: '#E60000', boxShadow: '0 0 0 1px #E60000' }}
-            _hover={{ borderColor: '#999999' }}
-            color={inputColor}
-            _placeholder={placeholderColor}
-            placeholder="Type your message here..."
-            value={inputCode}
-            onChange={handleChange}
-          />
-          <Button
-            variant="primary"
-            py="20px"
-            px="24px"
-            fontSize="sm"
-            fontWeight="600"
-            borderRadius="8px"
-            ms="auto"
-            w={{ base: '140px', md: '180px' }}
-            h="54px"
-            onClick={handleTranslate}
-            isLoading={loading ? true : false}
-          >
-            Submit
-          </Button>
-        </Flex>
+          <Flex w="100%" mb="16px">
+            <Input
+              minH="56px"
+              h="100%"
+              border="2px solid"
+              borderColor={borderColor}
+              borderRadius="8px"
+              p="16px 20px"
+              me="12px"
+              fontSize="15px"
+              fontWeight="400"
+              bg={useColorModeValue('white', '#1A1A1A')}
+              _focus={{ 
+                borderColor: '#E60000',
+                boxShadow: 'none',
+              }}
+              _hover={{ borderColor: '#999999' }}
+              color={inputColor}
+              _placeholder={{ color: '#999999' }}
+              placeholder="Type your message..."
+              value={inputCode}
+              onChange={handleChange}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter' && !loading && inputCode.trim()) {
+                  handleTranslate();
+                }
+              }}
+            />
+            <Button
+              variant="primary"
+              px="32px"
+              fontSize="15px"
+              fontWeight="600"
+              borderRadius="8px"
+              w="120px"
+              h="56px"
+              onClick={handleTranslate}
+              isLoading={loading ? true : false}
+              isDisabled={!inputCode.trim() || loading}
+            >
+              Send
+            </Button>
+          </Flex>
+        </Box>
 
         {/* End Conversation Button */}
         <Flex
-          ms={{ base: '0px', xl: '60px' }}
-          mt="10px"
+          mt="12px"
           justifySelf={'flex-end'}
           display={messages.length > 0 ? 'flex' : 'none'}
         >
           <Button
             variant="outline"
-            py="20px"
-            px="16px"
-            fontSize="sm"
+            py="18px"
+            px="24px"
+            fontSize="14px"
             fontWeight="600"
             borderRadius="8px"
             w="100%"
-            h="54px"
+            h="52px"
             borderWidth="2px"
             borderColor={brandColor}
             color={brandColor}
+            bg="transparent"
             _hover={{
-              bg: useColorModeValue('#FFE5E5', 'whiteAlpha.100'),
+              bg: useColorModeValue('#FFE5E5', 'rgba(230, 0, 0, 0.1)'),
+              borderColor: '#CC0000',
+            }}
+            _active={{
+              bg: useColorModeValue('#FFB3B3', 'rgba(230, 0, 0, 0.2)'),
             }}
             onClick={handleEndConversation}
             isLoading={isEndingConversation}
@@ -436,26 +474,32 @@ export default function Chat(props: { apiKeyApp: string }) {
           </Button>
         </Flex>
 
+        {/* Professional Footer */}
         <Flex
           justify="center"
-          mt="20px"
-          direction={{ base: 'column', md: 'row' }}
+          mt="32px"
+          pt="24px"
+          borderTop={messages.length > 0 ? '1px solid' : 'none'}
+          borderColor={useColorModeValue('#E6E6E6', '#333333')}
+          direction="column"
           alignItems="center"
+          gap="8px"
         >
-          <Text fontSize="xs" textAlign="center" color={gray}>
-            Free Research Preview. ChatGPT may produce inaccurate information
-            about people, places, or facts.
+          <Text 
+            fontSize="13px" 
+            textAlign="center" 
+            color={useColorModeValue('#999999', '#666666')}
+          >
+            AI-generated responses may not always be accurate. Please verify important information.
           </Text>
-          <Link href="https://help.openai.com/en/articles/6825453-chatgpt-release-notes">
-            <Text
-              fontSize="xs"
-              color={textColor}
-              fontWeight="500"
-              textDecoration="underline"
-            >
-              ChatGPT May 12 Version
+          <Flex
+            gap="8px"
+            alignItems="center"
+          >
+            <Text fontSize="12px" color={useColorModeValue('#999999', '#666666')}>
+              © {new Date().getFullYear()} Vodafone
             </Text>
-          </Link>
+          </Flex>
         </Flex>
       </Flex>
     </Flex>

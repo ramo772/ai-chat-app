@@ -3,11 +3,8 @@
 // Chakra Imports
 import {
   Box,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
   Flex,
-  Link,
+  Image,
   useColorModeValue,
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
@@ -36,6 +33,7 @@ export default function AdminNavbar(props: {
   // Vodafone UK Professional Navbar Styling
   let mainText = useColorModeValue('#333333', 'white');
   let secondaryText = useColorModeValue('#666666', '#CCCCCC');
+  let brandColor = useColorModeValue('#E60000', 'white');
   let navbarPosition = 'fixed' as const;
   let navbarFilter = 'none';
   let navbarBackdrop = 'blur(20px)';
@@ -111,40 +109,12 @@ export default function AdminNavbar(props: {
         mb={gap}
       >
         <Box mb={{ base: '8px', md: '0px' }}>
-          <Breadcrumb>
-            <BreadcrumbItem color={secondaryText} fontSize="sm" mb="5px">
-              <BreadcrumbLink href="#" color={secondaryText}>
-                Pages
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-
-            <BreadcrumbItem color={secondaryText} fontSize="sm">
-              <BreadcrumbLink href="#" color={secondaryText}>
-                {brandText}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-          </Breadcrumb>
-          {/* Here we create navbar brand, based on route name */}
-          <Link
-            color={mainText}
-            href="#"
-            bg="inherit"
-            borderRadius="inherit"
-            fontWeight="bold"
-            fontSize="34px"
-            p="0px"
-            _hover={{ color: { mainText } }}
-            _active={{
-              bg: 'inherit',
-              transform: 'none',
-              borderColor: 'transparent',
-            }}
-            _focus={{
-              boxShadow: 'none',
-            }}
-          >
-            {brandText}
-          </Link>
+          <Image
+            src="/img/vf-logo-large.png"
+            alt="Vodafone"
+            h="32px"
+            objectFit="contain"
+          />
         </Box>
         <Box ms="auto" w={{ sm: '100%', md: 'unset' }}>
           <AdminNavbarLinks setApiKey={setApiKey} secondary={props.secondary} />
