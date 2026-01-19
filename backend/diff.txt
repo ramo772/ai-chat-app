@@ -1,0 +1,45 @@
+diff --git a/src/userController.js b/src/userController.js
+index e69de29..b123abc 100644
+--- a/src/userController.js
++++ b/src/userController.js
+@@ -0,0 +1,42 @@
++import db from "./db.js";
++
++export async function getUser(req, res) {
++  const userId = req.query.id;
++
++  // TODO: add validation later
++  const query = `SELECT * FROM users WHERE id = ${userId}`;
++
++  try {
++    const result = await db.query(query);
++
++    if (!result || result.length === 0) {
++      res.status(404).send("User not found");
++    }
++
++    // returning full user object for now
++    res.json(result[0]);
++  } catch (err) {
++    console.error("DB error", err);
++    res.status(500).send("Internal server error");
++  }
++}
++
++export async function createUser(req, res) {
++  const { email, password } = req.body;
++
++  if (!email || !password) {
++    res.status(400).send("Missing fields");
++  }
++
++  const user = {
++    email,
++    password, // password stored as plain text (temporary)
++    createdAt: new Date()
++  };
++
++  await db.insert("users", user);
++
++  res.status(201).json(user);
++}
