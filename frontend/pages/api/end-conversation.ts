@@ -11,7 +11,7 @@ export default async function handler(
   }
 
   try {
-    const response = await fetch(`${BACKEND_URL}/api/chatAPI`, {
+    const response = await fetch(`${BACKEND_URL}/api/end-conversation`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -19,6 +19,17 @@ export default async function handler(
       body: JSON.stringify(req.body),
     });
 
+    // Check if response is a PDF
+    const contentType = response.headers.get('content-type');
+    
+    if (contentType?.includes('application/pdf')) {
+      const buffer = await response.arrayBuffer();
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="conversation-summary-${Date.now()}.pdf"`);
+      return res.send(Buffer.from(buffer));
+    }
+
+    // Otherwise return JSON
     const data = await response.json();
     return res.status(response.status).json(data);
   } catch (error) {
