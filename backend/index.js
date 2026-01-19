@@ -100,7 +100,7 @@ app.post("/api/chatAPI", async (req, res) => {
 })
 
 // SSE endpoint for streaming messages
-app.get("/messages", (req, res) => {
+app.get("/api/messages", (req, res) => {
   res.setHeader("Content-Type", "text/event-stream")
   res.setHeader("Cache-Control", "no-cache")
   res.setHeader("Connection", "keep-alive")
