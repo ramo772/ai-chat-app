@@ -26,7 +26,7 @@ export default function MessageBox(props: { output: string }) {
         className="font-medium"
         components={{
           p: ({ node, ...props }) => <p style={{ marginBottom: '12px' }} {...props} />,
-          strong: ({ node, ...props }) => <strong style={{ fontWeight: '600', color: useColorModeValue('#E60000', '#FF4D4D') }} {...props} />,
+          strong: ({ node, ...props }) => <strong style={{ fontWeight: 600, color: useColorModeValue('#E60000', '#FF4D4D') }} {...props} />,
           a: ({ node, ...props }) => <a style={{ color: '#E60000', textDecoration: 'underline' }} {...props} />,
         }}
       >
