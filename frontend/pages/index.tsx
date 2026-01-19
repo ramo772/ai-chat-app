@@ -61,7 +61,7 @@ export default function Chat(props: { apiKeyApp: string }) {
   );
 
   useEffect(() => {
-        const eventSource = new EventSource('/messages');
+        const eventSource = new EventSource('/api/messages');
         eventSource.onmessage = (event) => {
           console.log('New message from server:', event.data);
             const data = JSON.parse(event.data);
