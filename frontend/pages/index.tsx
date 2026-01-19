@@ -61,7 +61,7 @@ export default function Chat(props: { apiKeyApp: string }) {
   );
 
   useEffect(() => {
-        const eventSource = new EventSource('http://localhost:8000/messages');
+        const eventSource = new EventSource('/messages');
         eventSource.onmessage = (event) => {
           console.log('New message from server:', event.data);
             const data = JSON.parse(event.data);
@@ -103,7 +103,7 @@ export default function Chat(props: { apiKeyApp: string }) {
     };
 
     // -------------- Fetch --------------
-    const response = await fetch('http://localhost:8000/api/chatAPI', {
+    const response = await fetch('/api/chatAPI', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'      },
