@@ -47,7 +47,7 @@ export default function Chat(props: { apiKeyApp: string }) {
   
   // Connect to SSE for streaming responses
   useEffect(() => {
-    const eventSource = new EventSource('http://localhost:8000/api/messages');
+    const eventSource = new EventSource('/api/messages');
     
     eventSource.onmessage = (event) => {
       try {
@@ -151,7 +151,7 @@ export default function Chat(props: { apiKeyApp: string }) {
     
     try {
       // Call backend API
-      const response = await fetch('http://localhost:8000/api/chatAPI', {
+      const response = await fetch('/api/chatAPI', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -190,7 +190,7 @@ export default function Chat(props: { apiKeyApp: string }) {
     setIsEndingConversation(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/end-conversation', {
+      const response = await fetch('/api/end-conversation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
