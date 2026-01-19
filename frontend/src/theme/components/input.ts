@@ -5,52 +5,73 @@ export const inputStyles = {
       baseStyle: {
         field: {
           fontWeight: 400,
-          borderRadius: '14px',
+          borderRadius: '8px',
         },
       },
 
       variants: {
         main: (props: any) => ({
           field: {
-            bg: mode('transparent', 'navy.800')(props),
-            border: '1px solid',
-            color: mode('navy.700', 'white')(props),
-            borderColor: mode('gray.200', 'whiteAlpha.100')(props),
-            borderRadius: '12px',
+            bg: mode('white', '#2A2A2A')(props),
+            border: '2px solid',
+            color: mode('#333333', 'white')(props),
+            borderColor: mode('#E6E6E6', '#4A4A4A')(props),
+            borderRadius: '8px',
             fontSize: 'sm',
-            p: '20px',
-            _placeholder: { color: 'secondaryGray.400' },
+            p: '16px',
+            _placeholder: { color: '#999999' },
+            _hover: {
+              borderColor: mode('#999999', '#666666')(props),
+            },
+            _focus: {
+              borderColor: '#E60000',
+              boxShadow: '0 0 0 1px #E60000',
+            },
           },
         }),
         auth: (props: any) => ({
           field: {
-            fontWeight: '500',
-            color: mode('navy.700', 'white')(props),
-            bg: mode('transparent', 'transparent')(props),
-            border: '1px solid',
-            borderColor: mode('gray.200', 'rgba(135, 140, 189, 0.3)')(props),
-            borderRadius: '12px',
+            fontWeight: '400',
+            color: mode('#333333', 'white')(props),
+            bg: mode('white', '#2A2A2A')(props),
+            border: '2px solid',
+            borderColor: mode('#E6E6E6', '#4A4A4A')(props),
+            borderRadius: '8px',
             _placeholder: {
-              color: 'gray.500',
+              color: '#999999',
               fontWeight: '400',
+            },
+            _hover: {
+              borderColor: mode('#999999', '#666666')(props),
+            },
+            _focus: {
+              borderColor: '#E60000',
+              boxShadow: '0 0 0 1px #E60000',
             },
           },
         }),
-        authSecondary: () => ({
+        authSecondary: (props: any) => ({
           field: {
-            bg: 'transparent',
-            border: '1px solid',
-            borderColor: 'gray.200',
-            borderRadius: '12px',
-            _placeholder: { color: 'gray.500' },
+            bg: mode('white', '#2A2A2A')(props),
+            border: '2px solid',
+            borderColor: mode('#E6E6E6', '#4A4A4A')(props),
+            borderRadius: '8px',
+            _placeholder: { color: '#999999' },
+            _hover: {
+              borderColor: mode('#999999', '#666666')(props),
+            },
+            _focus: {
+              borderColor: '#E60000',
+              boxShadow: '0 0 0 1px #E60000',
+            },
           },
         }),
-        search: () => ({
+        search: (props: any) => ({
           field: {
             border: 'none',
             py: '11px',
             borderRadius: 'inherit',
-            _placeholder: { color: 'gray.500' },
+            _placeholder: { color: '#999999' },
           },
         }),
       },
@@ -63,34 +84,52 @@ export const inputStyles = {
       },
 
       variants: {
-        main: () => ({
+        main: (props: any) => ({
           field: {
-            bg: 'transparent',
-            border: '1px solid',
-
-            borderColor: 'gray.200',
-            borderRadius: '12px',
-            _placeholder: { color: 'gray.500' },
+            bg: mode('white', '#2A2A2A')(props),
+            border: '2px solid',
+            borderColor: mode('#E6E6E6', '#4A4A4A')(props),
+            borderRadius: '8px',
+            _placeholder: { color: '#999999' },
+            _hover: {
+              borderColor: mode('#999999', '#666666')(props),
+            },
+            _focus: {
+              borderColor: '#E60000',
+              boxShadow: '0 0 0 1px #E60000',
+            },
           },
         }),
-        auth: () => ({
+        auth: (props: any) => ({
           field: {
-            bg: 'transparent',
-            border: '1px solid',
-
-            borderColor: 'gray.200',
-            borderRadius: '12px',
-            _placeholder: { color: 'gray.500' },
+            bg: mode('white', '#2A2A2A')(props),
+            border: '2px solid',
+            borderColor: mode('#E6E6E6', '#4A4A4A')(props),
+            borderRadius: '8px',
+            _placeholder: { color: '#999999' },
+            _hover: {
+              borderColor: mode('#999999', '#666666')(props),
+            },
+            _focus: {
+              borderColor: '#E60000',
+              boxShadow: '0 0 0 1px #E60000',
+            },
           },
         }),
-        authSecondary: () => ({
+        authSecondary: (props: any) => ({
           field: {
-            bg: 'transparent',
-            border: '1px solid',
-
-            borderColor: 'gray.200',
-            borderRadius: '12px',
-            _placeholder: { color: 'gray.500' },
+            bg: mode('white', '#2A2A2A')(props),
+            border: '2px solid',
+            borderColor: mode('#E6E6E6', '#4A4A4A')(props),
+            borderRadius: '8px',
+            _placeholder: { color: '#999999' },
+            _hover: {
+              borderColor: mode('#999999', '#666666')(props),
+            },
+            _focus: {
+              borderColor: '#E60000',
+              boxShadow: '0 0 0 1px #E60000',
+            },
           },
         }),
         search: () => ({

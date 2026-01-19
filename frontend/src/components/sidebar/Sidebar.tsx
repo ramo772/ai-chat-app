@@ -36,12 +36,12 @@ function Sidebar(props: SidebarProps) {
   // this is for the rest of the collapses
   let variantChange = '0.2s linear';
   let shadow = useColorModeValue(
-    '14px 17px 40px 4px rgba(112, 144, 176, 0.08)',
+    '0 2px 8px rgba(0, 0, 0, 0.06)',
     'unset',
   );
   // Chakra Color Mode
-  let sidebarBg = useColorModeValue('white', 'navy.800');
-  let sidebarRadius = '14px';
+  let sidebarBg = useColorModeValue('white', '#1A1A1A');
+  let sidebarRadius = '0px';
   let sidebarMargins = '0px';
   // SIDEBAR
   return (
@@ -49,16 +49,12 @@ function Sidebar(props: SidebarProps) {
       <Box
         bg={sidebarBg}
         transition={variantChange}
-        w="285px"
-        ms={{
-          sm: '16px',
-        }}
-        my={{
-          sm: '16px',
-        }}
-        h="calc(100vh - 32px)"
+        w="300px"
+        h="100vh"
         m={sidebarMargins}
         borderRadius={sidebarRadius}
+        borderRight="1px solid"
+        borderColor={useColorModeValue('#E6E6E6', '#333333')}
         minH="100%"
         overflowX="hidden"
         boxShadow={shadow}
@@ -78,8 +74,8 @@ function Sidebar(props: SidebarProps) {
 
 // FUNCTIONS
 export function SidebarResponsive(props: { routes: IRoute[] }) {
-  let sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
-  let menuColor = useColorModeValue('gray.400', 'white');
+  let sidebarBackgroundColor = useColorModeValue('white', '#1A1A1A');
+  let menuColor = useColorModeValue('#333333', 'white');
   // // SIDEBAR
   const { isOpen, onOpen, onClose } = useDisclosure();
 

@@ -88,23 +88,23 @@ export default function Chat(props: { apiKeyApp: string }) {
     };
   }, []);
   
-  const borderColor = useColorModeValue('gray.200', 'whiteAlpha.200');
-  const inputColor = useColorModeValue('navy.700', 'white');
-  const iconColor = useColorModeValue('brand.500', 'white');
+  const borderColor = useColorModeValue('#E6E6E6', 'whiteAlpha.200');
+  const inputColor = useColorModeValue('#333333', 'white');
+  const iconColor = useColorModeValue('#E60000', 'white');
   const bgIcon = useColorModeValue(
-    'linear-gradient(180deg, #FBFBFF 0%, #CACAFF 100%)',
+    '#FFE5E5',
     'whiteAlpha.200',
   );
-  const brandColor = useColorModeValue('brand.500', 'white');
+  const brandColor = useColorModeValue('#E60000', 'white');
   const buttonBg = useColorModeValue('white', 'whiteAlpha.100');
-  const gray = useColorModeValue('gray.500', 'white');
+  const gray = useColorModeValue('#666666', '#CCCCCC');
   const buttonShadow = useColorModeValue(
-    '14px 27px 45px rgba(112, 144, 176, 0.2)',
+    '0 2px 12px rgba(0, 0, 0, 0.08)',
     'none',
   );
-  const textColor = useColorModeValue('navy.700', 'white');
+  const textColor = useColorModeValue('#333333', 'white');
   const placeholderColor = useColorModeValue(
-    { color: 'gray.500' },
+    { color: '#999999' },
     { color: 'whiteAlpha.600' },
   );
 
@@ -254,128 +254,44 @@ export default function Chat(props: { apiKeyApp: string }) {
       pt={{ base: '70px', md: '0px' }}
       direction="column"
       position="relative"
+      bg={useColorModeValue('#FFFFFF', '#1A1A1A')}
     >
-      <Img
-        src={Bg.src}
-        position={'absolute'}
-        w="350px"
-        left="50%"
-        top="50%"
-        transform={'translate(-50%, -50%)'}
-      />
       <Flex
         direction="column"
         mx="auto"
         w={{ base: '100%', md: '100%', xl: '100%' }}
         minH={{ base: '75vh', '2xl': '85vh' }}
         maxW="1000px"
+        px={{ base: '20px', md: '40px' }}
       >
-        {/* Model Change */}
-        <Flex direction={'column'} w="100%" mb={messages.length > 0 ? '20px' : 'auto'}>
+        {/* Welcome Message - Show when no messages */}
+        {messages.length === 0 && (
           <Flex
-            mx="auto"
-            zIndex="2"
-            w="max-content"
-            mb="20px"
-            borderRadius="60px"
+            direction="column"
+            align="center"
+            justify="center"
+            flex="1"
+            textAlign="center"
+            mb="40px"
           >
-            <Flex
-              cursor={'pointer'}
-              transition="0.3s"
-              justify={'center'}
-              align="center"
-              bg={model === 'gpt-3.5-turbo' ? buttonBg : 'transparent'}
-              w="174px"
-              h="70px"
-              boxShadow={model === 'gpt-3.5-turbo' ? buttonShadow : 'none'}
-              borderRadius="14px"
-              color={textColor}
-              fontSize="18px"
-              fontWeight={'700'}
-              onClick={() => setModel('gpt-3.5-turbo')}
+            <Text
+              fontSize={{ base: '32px', md: '48px' }}
+              fontWeight="700"
+              color={useColorModeValue('#E60000', 'white')}
+              mb="16px"
             >
-              <Flex
-                borderRadius="full"
-                justify="center"
-                align="center"
-                bg={bgIcon}
-                me="10px"
-                h="39px"
-                w="39px"
-              >
-                <Icon
-                  as={MdAutoAwesome}
-                  width="20px"
-                  height="20px"
-                  color={iconColor}
-                />
-              </Flex>
-              GPT-3.5
-            </Flex>
-            <Flex
-              cursor={'pointer'}
-              transition="0.3s"
-              justify={'center'}
-              align="center"
-              bg={model === 'gpt-4' ? buttonBg : 'transparent'}
-              w="164px"
-              h="70px"
-              boxShadow={model === 'gpt-4' ? buttonShadow : 'none'}
-              borderRadius="14px"
-              color={textColor}
-              fontSize="18px"
-              fontWeight={'700'}
-              onClick={() => setModel('gpt-4')}
+              Hello, how can I help?
+            </Text>
+            <Text
+              fontSize={{ base: '16px', md: '18px' }}
+              color={useColorModeValue('#666666', '#CCCCCC')}
+              maxW="600px"
             >
-              <Flex
-                borderRadius="full"
-                justify="center"
-                align="center"
-                bg={bgIcon}
-                me="10px"
-                h="39px"
-                w="39px"
-              >
-                <Icon
-                  as={MdBolt}
-                  width="20px"
-                  height="20px"
-                  color={iconColor}
-                />
-              </Flex>
-              GPT-4
-            </Flex>
+              Ask me anything. I'm here to assist you with your questions.
+            </Text>
           </Flex>
-
-          <Accordion color={gray} allowToggle w="100%" my="0px" mx="auto">
-            <AccordionItem border="none">
-              <AccordionButton
-                borderBottom="0px solid"
-                maxW="max-content"
-                mx="auto"
-                _hover={{ border: '0px solid', bg: 'none' }}
-                _focus={{ border: '0px solid', bg: 'none' }}
-              >
-                <Box flex="1" textAlign="left">
-                  <Text color={gray} fontWeight="500" fontSize="sm">
-                    No plugins added
-                  </Text>
-                </Box>
-                <AccordionIcon color={gray} />
-              </AccordionButton>
-              <AccordionPanel mx="auto" w="max-content" p="0px 0px 10px 0px">
-                <Text
-                  color={gray}
-                  fontWeight="500"
-                  fontSize="sm"
-                  textAlign={'center'}
-                >
-                  This is a cool text example.
-                </Text>
-              </AccordionPanel>
-            </AccordionItem>
-          </Accordion>
-        </Flex>
+        )}
+        
         {/* Main Box - Conversation History */}
         <Flex
           direction="column"
@@ -389,19 +305,18 @@ export default function Chat(props: { apiKeyApp: string }) {
               {message.role === 'user' ? (
                 <Flex w="100%" align={'center'} mb="10px" justifyContent="flex-end">
                   <Flex
-                    p="22px"
-                    border="1px solid"
-                    borderColor={borderColor}
-                    borderRadius="14px"
+                    p="16px 20px"
+                    border="none"
+                    borderRadius="8px"
                     maxW="70%"
                     zIndex={'2'}
-                    bg={useColorModeValue('blue.50', 'whiteAlpha.100')}
+                    bg={useColorModeValue('#FFE5E5', '#660000')}
                   >
                     <Text
-                      color={textColor}
-                      fontWeight="600"
+                      color={useColorModeValue('#333333', 'white')}
+                      fontWeight="500"
                       fontSize={{ base: 'sm', md: 'md' }}
-                      lineHeight={{ base: '24px', md: '26px' }}
+                      lineHeight={{ base: '22px', md: '24px' }}
                     >
                       {message.content}
                     </Text>
@@ -410,10 +325,8 @@ export default function Chat(props: { apiKeyApp: string }) {
                     borderRadius="full"
                     justify="center"
                     align="center"
-                    bg={'transparent'}
-                    border="1px solid"
-                    borderColor={borderColor}
-                    ms="20px"
+                    bg={useColorModeValue('#E60000', '#CC0000')}
+                    ms="12px"
                     h="40px"
                     minH="40px"
                     minW="40px"
@@ -422,7 +335,7 @@ export default function Chat(props: { apiKeyApp: string }) {
                       as={MdPerson}
                       width="20px"
                       height="20px"
-                      color={brandColor}
+                      color="white"
                     />
                   </Flex>
                 </Flex>
@@ -432,8 +345,8 @@ export default function Chat(props: { apiKeyApp: string }) {
                     borderRadius="full"
                     justify="center"
                     align="center"
-                    bg={'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)'}
-                    me="20px"
+                    bg={useColorModeValue('#E60000', '#CC0000')}
+                    me="12px"
                     h="40px"
                     minH="40px"
                     minW="40px"
@@ -462,14 +375,15 @@ export default function Chat(props: { apiKeyApp: string }) {
           <Input
             minH="54px"
             h="100%"
-            border="1px solid"
+            border="2px solid"
             borderColor={borderColor}
-            borderRadius="45px"
+            borderRadius="8px"
             p="15px 20px"
             me="10px"
             fontSize="sm"
-            fontWeight="500"
-            _focus={{ borderColor: 'none' }}
+            fontWeight="400"
+            _focus={{ borderColor: '#E60000', boxShadow: '0 0 0 1px #E60000' }}
+            _hover={{ borderColor: '#999999' }}
             color={inputColor}
             _placeholder={placeholderColor}
             placeholder="Type your message here..."
@@ -479,21 +393,13 @@ export default function Chat(props: { apiKeyApp: string }) {
           <Button
             variant="primary"
             py="20px"
-            px="16px"
+            px="24px"
             fontSize="sm"
-            borderRadius="45px"
+            fontWeight="600"
+            borderRadius="8px"
             ms="auto"
-            w={{ base: '160px', md: '210px' }}
+            w={{ base: '140px', md: '180px' }}
             h="54px"
-            _hover={{
-              boxShadow:
-                '0px 21px 27px -10px rgba(96, 60, 255, 0.48) !important',
-              bg:
-                'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%) !important',
-              _disabled: {
-                bg: 'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)',
-              },
-            }}
             onClick={handleTranslate}
             isLoading={loading ? true : false}
           >
@@ -513,13 +419,15 @@ export default function Chat(props: { apiKeyApp: string }) {
             py="20px"
             px="16px"
             fontSize="sm"
-            borderRadius="45px"
+            fontWeight="600"
+            borderRadius="8px"
             w="100%"
             h="54px"
+            borderWidth="2px"
             borderColor={brandColor}
             color={brandColor}
             _hover={{
-              bg: useColorModeValue('gray.100', 'whiteAlpha.100'),
+              bg: useColorModeValue('#FFE5E5', 'whiteAlpha.100'),
             }}
             onClick={handleEndConversation}
             isLoading={isEndingConversation}

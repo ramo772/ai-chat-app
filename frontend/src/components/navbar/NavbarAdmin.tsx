@@ -33,18 +33,18 @@ export default function AdminNavbar(props: {
 
   const { secondary, brandText, setApiKey } = props;
 
-  // Here are all the props that may change depending on navbar's type or state.(secondary, variant, scrolled)
-  let mainText = useColorModeValue('navy.700', 'white');
-  let secondaryText = useColorModeValue('gray.700', 'white');
+  // Vodafone UK Professional Navbar Styling
+  let mainText = useColorModeValue('#333333', 'white');
+  let secondaryText = useColorModeValue('#666666', '#CCCCCC');
   let navbarPosition = 'fixed' as const;
   let navbarFilter = 'none';
   let navbarBackdrop = 'blur(20px)';
-  let navbarShadow = 'none';
+  let navbarShadow = scrolled ? '0 2px 12px rgba(0, 0, 0, 0.08)' : 'none';
   let navbarBg = useColorModeValue(
-    'rgba(244, 247, 254, 0.2)',
-    'rgba(11,20,55,0.5)',
+    'rgba(255, 255, 255, 0.95)',
+    'rgba(26, 26, 26, 0.95)',
   );
-  let navbarBorder = 'transparent';
+  let navbarBorder = useColorModeValue('#E6E6E6', '#333333');
   let secondaryMargin = '0px';
   let gap = '0px';
   const changeNavbar = () => {
@@ -66,8 +66,9 @@ export default function AdminNavbar(props: {
       backdropFilter={navbarBackdrop}
       backgroundPosition="center"
       backgroundSize="cover"
-      borderRadius="16px"
-      borderWidth="1.5px"
+      borderRadius="0px"
+      borderWidth="0px"
+      borderBottomWidth="1px"
       borderStyle="solid"
       transitionDelay="0s, 0s, 0s, 0s"
       transitionDuration=" 0.25s, 0.25s, 0.25s, 0s"
@@ -75,29 +76,29 @@ export default function AdminNavbar(props: {
       transitionTimingFunction="linear, linear, linear, linear"
       alignItems={{ xl: 'center' }}
       display={secondary ? 'block' : 'flex'}
-      minH="75px"
+      minH="64px"
       justifyContent={{ xl: 'center' }}
       lineHeight="25.6px"
       mx="auto"
       mt={secondaryMargin}
-      pb="8px"
-      right={{ base: '12px', md: '30px', lg: '30px', xl: '30px' }}
+      pb="12px"
+      right={{ base: '0px', md: '0px', lg: '0px', xl: '0px' }}
       px={{
-        base: '8px',
-        md: '10px',
+        base: '16px',
+        md: '24px',
       }}
       ps={{
-        base: '8px',
-        md: '12px',
+        base: '16px',
+        md: '24px',
       }}
-      pt="8px"
-      top={{ base: '12px', md: '16px', xl: '18px' }}
+      pt="12px"
+      top="0px"
       w={{
-        base: 'calc(100vw - 8%)',
-        md: 'calc(100vw - 8%)',
-        lg: 'calc(100vw - 6%)',
-        xl: 'calc(100vw - 350px)',
-        '2xl': 'calc(100vw - 365px)',
+        base: '100vw',
+        md: '100vw',
+        lg: '100vw',
+        xl: 'calc(100vw - 300px)',
+        '2xl': 'calc(100vw - 300px)',
       }}
     >
       <Flex

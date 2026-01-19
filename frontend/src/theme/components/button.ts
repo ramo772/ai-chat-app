@@ -3,10 +3,11 @@ export const buttonStyles = {
   components: {
     Button: {
       baseStyle: {
-        borderRadius: '16px',
-        boxShadow: '45px 76px 113px 7px rgba(112, 144, 176, 0.08)',
-        transition: '.25s all ease',
+        borderRadius: '4px',
+        boxShadow: 'none',
+        transition: '.2s all ease',
         boxSizing: 'border-box',
+        fontWeight: '600',
         _focus: {
           boxShadow: 'none',
         },
@@ -17,17 +18,17 @@ export const buttonStyles = {
       variants: {
         transparent: (props: any) => ({
           bg: mode('transparent', 'transparent')(props),
-          color: mode('navy.700', 'white')(props),
+          color: mode('#333333', 'white')(props),
           boxShadow: 'none',
           _focus: {
             bg: mode('none', 'whiteAlpha.200')(props),
           },
           _active: {
-            bg: mode('gray.200', 'whiteAlpha.200')(props),
+            bg: mode('#F4F4F4', 'whiteAlpha.200')(props),
           },
           _hover: {
             boxShadow: 'unset',
-            bg: mode('gray.100', 'whiteAlpha.100')(props),
+            bg: mode('#F4F4F4', 'whiteAlpha.100')(props),
           },
         }),
         a: (props: any) => ({
@@ -47,51 +48,45 @@ export const buttonStyles = {
           },
         }),
         primary: (props: any) => ({
-          bg: mode(
-            'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)',
-            'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)',
-          )(props),
+          bg: mode('#E60000', '#E60000')(props),
           color: 'white',
           boxShadow: 'none',
           _focus: {
-            bg: mode(
-              'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)',
-              'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)',
-            )(props),
+            bg: mode('#CC0000', '#CC0000')(props),
           },
           _active: {
-            bg: mode(
-              'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)',
-              'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)',
-            )(props),
+            bg: mode('#990000', '#990000')(props),
+            transform: 'scale(0.98)',
           },
           _hover: {
-            boxShadow: '0px 21px 27px -10px rgba(96, 60, 255, 0.48) !important',
-            bg: mode(
-              'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)',
-              'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)',
-            )(props),
+            bg: mode('#CC0000', '#CC0000')(props),
+            boxShadow: '0 4px 12px rgba(230, 0, 0, 0.25)',
+            _disabled: {
+              bg: mode('#E60000', '#E60000')(props),
+            },
+          },
+          _disabled: {
+            bg: mode('#FFB3B3', '#660000')(props),
+            opacity: 0.6,
+            cursor: 'not-allowed',
           },
         }),
         red: (props: any) => ({
-          bg: mode('red.50', 'whiteAlpha.100')(props),
-          color: mode('red.600', 'white')(props),
+          bg: mode('#FFE5E5', 'whiteAlpha.100')(props),
+          color: mode('#E60000', 'white')(props),
           boxShadow: 'none',
           _focus: {
-            bg: mode('red.50', 'whiteAlpha.100')(props),
+            bg: mode('#FFE5E5', 'whiteAlpha.100')(props),
           },
           _active: {
-            bg: mode('red.50', 'whiteAlpha.100')(props),
+            bg: mode('#FFB3B3', 'whiteAlpha.100')(props),
           },
           _hover: {
-            bg: mode('red.100', 'whiteAlpha.200')(props),
+            bg: mode('#FFB3B3', 'whiteAlpha.200')(props),
           },
         }),
         chakraLinear: (props: any) => ({
-          bg: mode(
-            'linear-gradient(15.46deg, #7BCBD4 0%, #29C6B7 100%)',
-            'linear-gradient(15.46deg, #7BCBD4 0%, #29C6B7 100%)',
-          )(props),
+          bg: mode('#E60000', '#E60000')(props),
           color: 'white',
           boxShadow: 'none',
           _focus: {

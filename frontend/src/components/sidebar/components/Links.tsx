@@ -33,12 +33,14 @@ interface SidebarLinksProps extends PropsWithChildren {
 export function SidebarLinks(props: SidebarLinksProps) {
   //   Chakra color mode
   const pathname = usePathname();
-  let activeColor = useColorModeValue('navy.700', 'white');
-  let inactiveColor = useColorModeValue('gray.500', 'gray.500');
-  let borderColor = useColorModeValue('gray.200', 'whiteAlpha.300');
-  let activeIcon = useColorModeValue('brand.500', 'white');
-  let iconColor = useColorModeValue('navy.700', 'white');
-  let gray = useColorModeValue('gray.500', 'gray.500');
+  let activeColor = useColorModeValue('#333333', 'white');
+  let inactiveColor = useColorModeValue('#666666', '#999999');
+  let borderColor = useColorModeValue('#E6E6E6', '#333333');
+  let activeIcon = useColorModeValue('#E60000', 'white');
+  let iconColor = useColorModeValue('#333333', 'white');
+  let gray = useColorModeValue('#999999', '#666666');
+  let activeBg = useColorModeValue('#FFE5E5', '#660000');
+  let hoverBg = useColorModeValue('#F4F4F4', '#2A2A2A');
 
   const { routes } = props;
 
@@ -213,7 +215,14 @@ export function SidebarLinks(props: SidebarLinksProps) {
                       <Flex
                         w="100%"
                         alignItems="center"
-                        justifyContent="center"
+                        justifyContent="flex-start"
+                        bg={activeRoute(route.path.toLowerCase()) ? activeBg : 'transparent'}
+                        borderRadius="4px"
+                        p="12px 16px"
+                        transition="all 0.2s"
+                        _hover={{
+                          bg: activeRoute(route.path.toLowerCase()) ? activeBg : hoverBg,
+                        }}
                       >
                         <Box
                           color={
@@ -224,7 +233,6 @@ export function SidebarLinks(props: SidebarLinksProps) {
                               : inactiveColor
                           }
                           me="12px"
-                          mt="6px"
                         >
                           {route.icon}
                         </Box>
@@ -235,11 +243,11 @@ export function SidebarLinks(props: SidebarLinksProps) {
                               ? gray
                               : activeRoute(route.path.toLowerCase())
                               ? activeColor
-                              : 'gray.500'
+                              : inactiveColor
                           }
-                          fontWeight="500"
+                          fontWeight={activeRoute(route.path.toLowerCase()) ? '600' : '500'}
                           letterSpacing="0px"
-                          fontSize="sm"
+                          fontSize="14px"
                         >
                           {route.name}
                         </Text>
