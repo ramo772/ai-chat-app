@@ -24,15 +24,7 @@ const routes: IRoute[] = [
     ),
     collapse: false,
   },
-  {
-    name: 'PR Review',
-    path: '/pr-review',
-    icon: (
-      <Icon as={MdRateReview} width="20px" height="20px" color="inherit" />
-    ),
-    collapse: false,
-  },
-
+  
  
 
   // -------------- Prompt Pages --------------

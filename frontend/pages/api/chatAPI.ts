@@ -16,7 +16,7 @@ const handler = async (req: Request): Promise<Response> => {
       apiKeyFinal = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
     }
 
-    if (!apiKey) {
+    if (!apiKeyFinal) {
       return new Response('API key not found', { status: 500 });
     }
 

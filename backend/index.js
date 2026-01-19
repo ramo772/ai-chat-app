@@ -4,6 +4,7 @@ import express from "express"
 import cors from "cors"
 import bodyParser from "body-parser"
 import Groq from "groq-sdk"
+import { LambdaClient, InvokeCommand } from "@aws-sdk/client-lambda"
 
 const app = express()
 const PORT = process.env.PORT || 8000
@@ -11,6 +12,11 @@ const PORT = process.env.PORT || 8000
 // Initialize Groq client
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
+})
+
+// Initialize Lambda client
+const lambdaClient = new LambdaClient({ 
+  region: process.env.AWS_REGION || "us-east-1" 
 })
 
 app.use(cors({ origin: "*" }))
@@ -95,6 +101,79 @@ app.post("/api/chatAPI", async (req, res) => {
       }
     })
     
+    return res.status(500).json({ error: error.message })
+  }
+})
+
+// End conversation endpoint - Generate summary and save to S3
+app.post("/api/end-conversation", async (req, res) => {
+  try {
+    const { messages } = req.body
+
+    if (!messages || messages.length === 0) {
+      return res.status(400).json({ error: "No conversation provided" })
+    }
+
+    console.log("Generating conversation summary for", messages.length, "messages")
+
+    const jobId = `job_${Date.now()}`
+
+    const payload = {
+      jobId,
+      messages: messages,
+      timestamp: new Date().toISOString(),
+    }
+
+    // Invoke Lambda function directly from EC2
+    const lambdaFunctionName = process.env.LAMBDA_FUNCTION_NAME || "YOUR_LAMBDA_NAME"
+    
+    console.log(`Invoking Lambda function: ${lambdaFunctionName}`)
+
+    const command = new InvokeCommand({
+      FunctionName: lambdaFunctionName,
+      InvocationType: "RequestResponse", // Synchronous invocation to get response
+      Payload: Buffer.from(JSON.stringify(payload)),
+    })
+
+    const lambdaResponse = await lambdaClient.send(command)
+
+    // Parse Lambda response
+    const responsePayload = JSON.parse(Buffer.from(lambdaResponse.Payload).toString())
+    
+    console.log("Lambda response:", responsePayload)
+
+    // Check if Lambda execution was successful
+    if (lambdaResponse.FunctionError) {
+      throw new Error(`Lambda error: ${responsePayload.errorMessage}`)
+    }
+
+    // Parse the body from Lambda response
+    const lambdaData = typeof responsePayload.body === 'string' 
+      ? JSON.parse(responsePayload.body) 
+      : responsePayload.body
+
+    // If Lambda returns S3 URL, fetch the file
+    if (lambdaData.s3Url) {
+      const fileResponse = await fetch(lambdaData.s3Url)
+      const fileBuffer = await fileResponse.arrayBuffer()
+      
+      // Send the file back to frontend
+      res.setHeader('Content-Type', 'application/pdf')
+      res.setHeader('Content-Disposition', `attachment; filename="conversation-summary-${Date.now()}.pdf"`)
+      return res.send(Buffer.from(fileBuffer))
+    }
+
+    // If Lambda returns file data directly (base64)
+    if (lambdaData.fileData) {
+      const fileBuffer = Buffer.from(lambdaData.fileData, 'base64')
+      res.setHeader('Content-Type', 'application/pdf')
+      res.setHeader('Content-Disposition', `attachment; filename="conversation-summary-${Date.now()}.pdf"`)
+      return res.send(fileBuffer)
+    }
+
+    return res.json(lambdaData)
+  } catch (error) {
+    console.error("Error in /api/end-conversation:", error)
     return res.status(500).json({ error: error.message })
   }
 })

@@ -31,15 +31,63 @@ export default function Chat(props: { apiKeyApp: string }) {
   // Input States
   const [inputOnSubmit, setInputOnSubmit] = useState<string>('');
   const [inputCode, setInputCode] = useState<string>('');
-  // Response message
-  const [outputCode, setOutputCode] = useState<string>('');
+  // Messages array for conversation history
+  const [messages, setMessages] = useState<{ role: 'user' | 'assistant'; content: string }[]>([]);
   // ChatGPT model
   const [model, setModel] = useState<OpenAIModel>('gpt-3.5-turbo');
   // Loading state
   const [loading, setLoading] = useState<boolean>(false);
+  const [isEndingConversation, setIsEndingConversation] = useState<boolean>(false);
 
   // API Key
   // const [apiKey, setApiKey] = useState<string>(apiKeyApp);
+  
+  // Connect to SSE for streaming responses
+  useEffect(() => {
+    const eventSource = new EventSource('http://localhost:8000/api/messages');
+    
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        
+        if (data.type === 'chunk' && data.content) {
+          // Update the last message (assistant's response) with new content
+          setMessages((prev) => {
+            if (prev.length === 0) return prev;
+            const newMessages = [...prev];
+            const lastMessage = newMessages[newMessages.length - 1];
+            
+            // Only update if the last message is from assistant
+            if (lastMessage.role === 'assistant') {
+              newMessages[newMessages.length - 1] = {
+                ...lastMessage,
+                content: lastMessage.content + data.content,
+              };
+            }
+            return newMessages;
+          });
+        } else if (data.type === 'done') {
+          console.log('Stream completed');
+        } else if (data.type === 'error') {
+          console.error('Stream error:', data.content);
+        } else if (data.type === 'connected') {
+          console.log('Connected to SSE:', data.message);
+        }
+      } catch (error) {
+        console.error('Error parsing SSE data:', error);
+      }
+    };
+    
+    eventSource.onerror = (error) => {
+      console.error('SSE connection error:', error);
+      eventSource.close();
+    };
+    
+    return () => {
+      eventSource.close();
+    };
+  }, []);
+  
   const borderColor = useColorModeValue('gray.200', 'whiteAlpha.200');
   const inputColor = useColorModeValue('navy.700', 'white');
   const iconColor = useColorModeValue('brand.500', 'white');
@@ -60,15 +108,7 @@ export default function Chat(props: { apiKeyApp: string }) {
     { color: 'whiteAlpha.600' },
   );
 
-  useEffect(() => {
-        const eventSource = new EventSource('/api/messages');
-        eventSource.onmessage = (event) => {
-          console.log('New message from server:', event.data);
-            const data = JSON.parse(event.data);
-            setOutputCode((prev) => prev + data.content);
-        };
-        return () => eventSource.close();
-    }, []);
+
 
   const handleTranslate = async () => {
     const apiKey = apiKeyApp;
@@ -93,38 +133,98 @@ export default function Chat(props: { apiKeyApp: string }) {
       );
       return;
     }
-    setOutputCode(' ');
+
+    // Add user message to conversation
+    const userMessage = { role: 'user' as const, content: inputCode };
+    setMessages((prev) => [...prev, userMessage]);
+    
+    // Clear input field
+    setInputCode('');
+    
     setLoading(true);
-    const controller = new AbortController();
-    const body: ChatBody = {
-      inputCode,
-      model,
-      apiKey,
-    };
 
-    // -------------- Fetch --------------
-    const response = await fetch('/api/chatAPI', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'      },
-      
-      signal: controller.signal,
-      body: JSON.stringify(body),
-    });
+    // Add empty assistant message that will be updated
+    setMessages((prev) => [...prev, { role: 'assistant' as const, content: '' }]);
+    
+    try {
+      // Call backend API
+      const response = await fetch('http://localhost:8000/api/chatAPI', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          inputCode,
+          message: inputCode
+        }),
+      });
 
-    if (!response.ok) {
-      setLoading(false);
-      if (response) {
-        alert(
-          'Something went wrong went fetching from the API. Make sure to use a valid API key.',
-        );
+      if (!response.ok) {
+        setLoading(false);
+        alert('Something went wrong with the API request.');
+        // Remove the empty assistant message on error
+        setMessages((prev) => prev.slice(0, -1));
+        return;
       }
+
+      setLoading(false);
+    } catch (error) {
+      console.error('Error:', error);
+      setLoading(false);
+      alert('Failed to connect to the backend.');
+      // Remove the empty assistant message on error
+      setMessages((prev) => prev.slice(0, -1));
+    }
+  };
+  
+  // Handle end conversation - generate summary/PDF
+  const handleEndConversation = async () => {
+    if (messages.length === 0) {
+      alert('No conversation to summarize.');
       return;
     }
 
+    setIsEndingConversation(true);
 
-    setLoading(false);
+    try {
+      const response = await fetch('http://localhost:8000/api/end-conversation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: messages,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate conversation summary');
+      }
+
+      // Get the file blob from response
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create a temporary link to download the file
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `conversation-summary-${Date.now()}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      alert('Conversation summary downloaded successfully!');
+    } catch (error) {
+      console.error('Error ending conversation:', error);
+      alert('Failed to generate conversation summary. Please try again.');
+    } finally {
+      setIsEndingConversation(false);
+    }
   };
+  
   // -------------- Copy Response --------------
   // const copyToClipboard = (text: string) => {
   //   const el = document.createElement('textarea');
@@ -171,7 +271,7 @@ export default function Chat(props: { apiKeyApp: string }) {
         maxW="1000px"
       >
         {/* Model Change */}
-        <Flex direction={'column'} w="100%" mb={outputCode ? '20px' : 'auto'}>
+        <Flex direction={'column'} w="100%" mb={messages.length > 0 ? '20px' : 'auto'}>
           <Flex
             mx="auto"
             zIndex="2"
@@ -276,80 +376,82 @@ export default function Chat(props: { apiKeyApp: string }) {
             </AccordionItem>
           </Accordion>
         </Flex>
-        {/* Main Box */}
+        {/* Main Box - Conversation History */}
         <Flex
           direction="column"
           w="100%"
           mx="auto"
-          display={outputCode ? 'flex' : 'none'}
+          display={messages.length > 0 ? 'flex' : 'none'}
           mb={'auto'}
         >
-          <Flex w="100%" align={'center'} mb="10px">
-            <Flex
-              borderRadius="full"
-              justify="center"
-              align="center"
-              bg={'transparent'}
-              border="1px solid"
-              borderColor={borderColor}
-              me="20px"
-              h="40px"
-              minH="40px"
-              minW="40px"
-            >
-              <Icon
-                as={MdPerson}
-                width="20px"
-                height="20px"
-                color={brandColor}
-              />
+          {messages.map((message, index) => (
+            <Flex key={index} direction="column" w="100%" mb="20px">
+              {message.role === 'user' ? (
+                <Flex w="100%" align={'center'} mb="10px" justifyContent="flex-end">
+                  <Flex
+                    p="22px"
+                    border="1px solid"
+                    borderColor={borderColor}
+                    borderRadius="14px"
+                    maxW="70%"
+                    zIndex={'2'}
+                    bg={useColorModeValue('blue.50', 'whiteAlpha.100')}
+                  >
+                    <Text
+                      color={textColor}
+                      fontWeight="600"
+                      fontSize={{ base: 'sm', md: 'md' }}
+                      lineHeight={{ base: '24px', md: '26px' }}
+                    >
+                      {message.content}
+                    </Text>
+                  </Flex>
+                  <Flex
+                    borderRadius="full"
+                    justify="center"
+                    align="center"
+                    bg={'transparent'}
+                    border="1px solid"
+                    borderColor={borderColor}
+                    ms="20px"
+                    h="40px"
+                    minH="40px"
+                    minW="40px"
+                  >
+                    <Icon
+                      as={MdPerson}
+                      width="20px"
+                      height="20px"
+                      color={brandColor}
+                    />
+                  </Flex>
+                </Flex>
+              ) : (
+                <Flex w="100%" justifyContent="flex-start">
+                  <Flex
+                    borderRadius="full"
+                    justify="center"
+                    align="center"
+                    bg={'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)'}
+                    me="20px"
+                    h="40px"
+                    minH="40px"
+                    minW="40px"
+                  >
+                    <Icon
+                      as={MdAutoAwesome}
+                      width="20px"
+                      height="20px"
+                      color="white"
+                    />
+                  </Flex>
+                  <Box maxW="70%">
+                    <MessageBoxChat output={message.content} />
+                  </Box>
+                </Flex>
+              )}
             </Flex>
-            <Flex
-              p="22px"
-              border="1px solid"
-              borderColor={borderColor}
-              borderRadius="14px"
-              w="100%"
-              zIndex={'2'}
-            >
-              <Text
-                color={textColor}
-                fontWeight="600"
-                fontSize={{ base: 'sm', md: 'md' }}
-                lineHeight={{ base: '24px', md: '26px' }}
-              >
-                {inputOnSubmit}
-              </Text>
-              <Icon
-                cursor="pointer"
-                as={MdEdit}
-                ms="auto"
-                width="20px"
-                height="20px"
-                color={gray}
-              />
-            </Flex>
-          </Flex>
-          <Flex w="100%">
-            <Flex
-              borderRadius="full"
-              justify="center"
-              align="center"
-              bg={'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)'}
-              me="20px"
-              h="40px"
-              minH="40px"
-              minW="40px"
-            >
-              <Icon
-                as={MdAutoAwesome}
-                width="20px"
-                height="20px"
-                color="white"
-              />
-            </Flex>
-            <MessageBoxChat output={outputCode} />
-          </Flex>
+          ))}
         </Flex>
         {/* Chat Input */}
         <Flex
@@ -371,6 +473,7 @@ export default function Chat(props: { apiKeyApp: string }) {
             color={inputColor}
             _placeholder={placeholderColor}
             placeholder="Type your message here..."
+            value={inputCode}
             onChange={handleChange}
           />
           <Button
@@ -395,6 +498,33 @@ export default function Chat(props: { apiKeyApp: string }) {
             isLoading={loading ? true : false}
           >
             Submit
+          </Button>
+        </Flex>
+
+        {/* End Conversation Button */}
+        <Flex
+          ms={{ base: '0px', xl: '60px' }}
+          mt="10px"
+          justifySelf={'flex-end'}
+          display={messages.length > 0 ? 'flex' : 'none'}
+        >
+          <Button
+            variant="outline"
+            py="20px"
+            px="16px"
+            fontSize="sm"
+            borderRadius="45px"
+            w="100%"
+            h="54px"
+            borderColor={brandColor}
+            color={brandColor}
+            _hover={{
+              bg: useColorModeValue('gray.100', 'whiteAlpha.100'),
+            }}
+            onClick={handleEndConversation}
+            isLoading={isEndingConversation}
+          >
+            End Conversation & Download Summary
           </Button>
         </Flex>
 
