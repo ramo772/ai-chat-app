@@ -13,16 +13,7 @@ const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 })
 
-app.use(
-  cors({
-    origin: ["http://localhost:3000", "http://34.204.9.129"],
-    methods: ["GET", "POST", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: false,
-  })
-)
-
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: "*" }))
 
 
 app.use(bodyParser.json())
@@ -131,11 +122,17 @@ app.get("/messages", (req, res) => {
   })
 })
 
-process.on("SIGINT", () => {
-  console.log("Shutting down...")
-  process.exit(0)
-})
-
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`✅ Server is running on port ${PORT}`)
 })
+
+process.on("SIGINT", () => {
+  console.log("Shutting down...")
+  server.close(() => process.exit(0))
+})
+
+process.on("SIGTERM", () => {
+  console.log("Shutting down...")
+  server.close(() => process.exit(0))
+})
+
