@@ -190,6 +190,7 @@ export default function Chat(props: { apiKeyApp: string }) {
     setIsEndingConversation(true);
 
     try {
+      // Step 1: End conversation and get S3 key
       const response = await fetch('/api/end-conversation', {
         method: 'POST',
         headers: {
@@ -204,22 +205,28 @@ export default function Chat(props: { apiKeyApp: string }) {
         throw new Error('Failed to generate conversation summary');
       }
 
-      // Get the file blob from response
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      const data = await response.json();
+      console.log('End conversation response:', data);
+
+      // Step 2: Get presigned download URL
+      const s3Key = data.s3Key || data.key;
+      if (!s3Key) {
+        throw new Error('No S3 key returned from server');
+      }
+
+      const downloadResponse = await fetch(`/api/download-conversation?key=${encodeURIComponent(s3Key)}`);
       
-      // Create a temporary link to download the file
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `conversation-summary-${Date.now()}.pdf`;
-      document.body.appendChild(link);
-      link.click();
+      if (!downloadResponse.ok) {
+        throw new Error('Failed to get download URL');
+      }
+
+      const { downloadUrl } = await downloadResponse.json();
+      console.log('Download URL:', downloadUrl);
+
+      // Step 3: Open the file in a new tab (avoids blob security issues)
+      window.open(downloadUrl, '_blank');
       
-      // Cleanup
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      
-      alert('Conversation summary downloaded successfully!');
+      alert('Conversation summary generated successfully!');
     } catch (error) {
       console.error('Error ending conversation:', error);
       alert('Failed to generate conversation summary. Please try again.');

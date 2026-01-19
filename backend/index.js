@@ -5,6 +5,8 @@ import cors from "cors"
 import bodyParser from "body-parser"
 import Groq from "groq-sdk"
 import { LambdaClient, InvokeCommand } from "@aws-sdk/client-lambda"
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3"
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 
 const app = express()
 const PORT = process.env.PORT || 8000
@@ -16,6 +18,11 @@ const groq = new Groq({
 
 // Initialize Lambda client
 const lambdaClient = new LambdaClient({ 
+  region: process.env.AWS_REGION || "us-east-1" 
+})
+
+// Initialize S3 client
+const s3Client = new S3Client({ 
   region: process.env.AWS_REGION || "us-east-1" 
 })
 
@@ -152,28 +159,50 @@ app.post("/api/end-conversation", async (req, res) => {
       ? JSON.parse(responsePayload.body) 
       : responsePayload.body
 
-    // If Lambda returns S3 URL, fetch the file
-    if (lambdaData.s3Url) {
-      const fileResponse = await fetch(lambdaData.s3Url)
-      const fileBuffer = await fileResponse.arrayBuffer()
-      
-      // Send the file back to frontend
-      res.setHeader('Content-Type', 'application/pdf')
-      res.setHeader('Content-Disposition', `attachment; filename="conversation-summary-${Date.now()}.pdf"`)
-      return res.send(Buffer.from(fileBuffer))
-    }
-
-    // If Lambda returns file data directly (base64)
-    if (lambdaData.fileData) {
-      const fileBuffer = Buffer.from(lambdaData.fileData, 'base64')
-      res.setHeader('Content-Type', 'application/pdf')
-      res.setHeader('Content-Disposition', `attachment; filename="conversation-summary-${Date.now()}.pdf"`)
-      return res.send(fileBuffer)
-    }
-
-    return res.json(lambdaData)
+    // Return the S3 key to the frontend
+    return res.json({
+      ok: true,
+      jobId: lambdaData.jobId || jobId,
+      s3Key: lambdaData.s3Key || lambdaData.key,
+      message: "Conversation saved successfully"
+    })
   } catch (error) {
     console.error("Error in /api/end-conversation:", error)
+    return res.status(500).json({ error: error.message })
+  }
+})
+
+// Download conversation endpoint - Generate presigned URL for S3 file
+app.get("/api/download-conversation", async (req, res) => {
+  try {
+    const { key } = req.query
+    
+    if (!key) {
+      return res.status(400).json({ error: "Missing S3 key parameter" })
+    }
+
+    console.log(`Generating presigned URL for key: ${key}`)
+
+    const bucketName = process.env.BUCKET_NAME || process.env.AWS_S3_BUCKET
+    
+    if (!bucketName) {
+      return res.status(500).json({ error: "S3 bucket name not configured" })
+    }
+
+    const command = new GetObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+      ResponseContentType: "text/html",
+      ResponseContentDisposition: `attachment; filename="conversation-${Date.now()}.html"`,
+    })
+
+    const downloadUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 }) // 5 minutes
+    
+    console.log("Presigned URL generated successfully")
+    
+    return res.json({ downloadUrl })
+  } catch (error) {
+    console.error("Error generating presigned URL:", error)
     return res.status(500).json({ error: error.message })
   }
 })
