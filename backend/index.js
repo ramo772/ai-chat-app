@@ -22,6 +22,9 @@ app.use(
   })
 )
 
+app.use(cors({ origin: "*" }));
+
+
 app.use(bodyParser.json())
 
 // SSE clients
